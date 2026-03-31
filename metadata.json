@@ -1,0 +1,8 @@
+{
+  "name": "PetCare Connect",
+  "description": "On-demand pet feeding and dog walking service platform connecting owners with vetted professionals.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}

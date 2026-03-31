@@ -1,0 +1,163 @@
+<!-- pages/index/index.wxml -->
+<view class="container">
+  <!-- Header -->
+  <view class="header">
+    <view class="logo-area">
+      <view class="logo-icon">🐾</view>
+      <text class="logo-text">PetCare</text>
+    </view>
+    <view class="role-switch" bindtap="toggleRole">
+      切换至{{user.role === 'owner' ? '代护员' : '主人'}}
+    </view>
+  </view>
+
+  <!-- Main Content -->
+  <scroll-view scroll-y class="main-content">
+    <!-- Home Tab -->
+    <view wx:if="{{activeTab === 'home'}}" class="tab-content">
+      <view class="hero-card">
+        <view class="hero-text">
+          <text class="greeting">你好, {{user.name}}!</text>
+          <text class="sub-greeting">{{user.role === 'owner' ? '今天谁需要照顾？' : '准备好帮助毛孩子了吗？'}}</text>
+        </view>
+        <view class="hero-bg-icon">🐕</view>
+      </view>
+
+      <!-- Owner View -->
+      <block wx:if="{{user.role === 'owner'}}">
+        <view class="service-grid">
+          <view class="service-card" bindtap="showPostView" data-type="feeding">
+            <view class="icon-box orange">🐱</view>
+            <text class="service-name">上门喂猫</text>
+            <text class="service-price">¥80起/次</text>
+          </view>
+          <view class="service-card" bindtap="showPostView" data-type="walking">
+            <view class="icon-box blue">🐶</view>
+            <text class="service-name">代人遛狗</text>
+            <text class="service-price">¥60起/30min</text>
+          </view>
+        </view>
+
+        <view class="safety-banner">
+          <text class="safety-icon">🛡️</text>
+          <view class="safety-text">
+            <text class="safety-title">仅限认证代护员</text>
+            <text class="safety-desc">每一位专业人员都经过实名认证和宠物护理测试。</text>
+          </view>
+        </view>
+      </block>
+
+      <!-- Provider View -->
+      <block wx:else>
+        <view class="section-header">
+          <text class="section-title">附近订单</text>
+          <text class="live-tag">实时更新</text>
+        </view>
+        
+        <view wx:for="{{orders}}" wx:key="id" wx:if="{{item.status === 'pending'}}" class="order-card">
+          <view class="order-header">
+            <view class="order-info">
+              <view class="order-icon {{item.type === 'feeding' ? 'orange' : 'blue'}}">
+                {{item.type === 'feeding' ? '🐱' : '🐶'}}
+              </view>
+              <view>
+                <text class="order-title">{{item.type === 'feeding' ? '上门喂猫' : '代人遛狗'}}</text>
+                <text class="order-pet">{{item.petName}} • {{item.petType === 'cat' ? '猫' : '狗'}}</text>
+              </view>
+            </view>
+            <text class="order-price">¥{{item.price}}</text>
+          </view>
+          <view class="order-details">
+            <view class="detail-item">📍 {{item.address}}</view>
+            <view class="detail-item">⏰ {{item.time}}</view>
+          </view>
+          <button class="accept-btn">接单</button>
+        </view>
+      </block>
+    </view>
+
+    <!-- Orders Tab -->
+    <view wx:if="{{activeTab === 'orders'}}" class="tab-content">
+      <text class="page-title">我的订单</text>
+      <view wx:for="{{orders}}" wx:key="id" class="order-list-item">
+        <view class="item-left">
+          <view class="item-icon {{item.type === 'feeding' ? 'orange' : 'blue'}}">
+            {{item.type === 'feeding' ? '🐱' : '🐶'}}
+          </view>
+          <view>
+            <text class="item-name">{{item.petName}}的{{item.type === 'feeding' ? '喂食' : '遛狗'}}</text>
+            <text class="item-time">{{item.time}}</text>
+          </view>
+        </view>
+        <view class="item-right">
+          <text class="status-tag {{item.status}}">{{item.status}}</text>
+          <text class="item-price">¥{{item.price}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Profile Tab -->
+    <view wx:if="{{activeTab === 'profile'}}" class="tab-content">
+      <view class="profile-header">
+        <view class="avatar-box">
+          <image class="avatar" src="{{user.avatar}}" />
+          <view wx:if="{{user.isVerified}}" class="verified-badge">✓</view>
+        </view>
+        <view class="user-info">
+          <text class="user-name">{{user.name}}</text>
+          <view class="user-tags">
+            <text class="role-tag">{{user.role === 'owner' ? '主人' : '代护员'}}</text>
+            <text class="rating-tag">⭐ {{user.rating}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="stats-row">
+        <view class="stat-card">
+          <text class="stat-num">{{user.completedOrders}}</text>
+          <text class="stat-label">完成订单</text>
+        </view>
+        <view class="stat-card">
+          <text class="stat-num">¥1,280</text>
+          <text class="stat-label">总支出</text>
+        </view>
+      </view>
+
+      <view class="menu-list">
+        <view class="menu-item" bindtap="showVerifyView">
+          <view class="menu-left">🛡️ 实名认证</view>
+          <view class="menu-right">
+            <text class="verified-text">已认证</text>
+            <text class="arrow">></text>
+          </view>
+        </view>
+        <view class="menu-item">
+          <view class="menu-left">🐾 我的宠物</view>
+          <text class="arrow">></text>
+        </view>
+        <view class="menu-item">
+          <view class="menu-left">❓ 帮助与支持</view>
+          <text class="arrow">></text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- Tab Bar -->
+  <view class="tab-bar">
+    <view class="tab-item {{activeTab === 'home' ? 'active' : ''}}" bindtap="switchTab" data-tab="home">
+      <text class="tab-icon">🏠</text>
+      <text class="tab-text">首页</text>
+    </view>
+    <view class="tab-item {{activeTab === 'orders' ? 'active' : ''}}" bindtap="switchTab" data-tab="orders">
+      <text class="tab-icon">📋</text>
+      <text class="tab-text">订单</text>
+    </view>
+    <view class="tab-item {{activeTab === 'profile' ? 'active' : ''}}" bindtap="switchTab" data-tab="profile">
+      <text class="tab-icon">👤</text>
+      <text class="tab-text">我的</text>
+    </view>
+  </view>
+
+  <!-- Modals (Post/Verify) would be implemented as hidden views or custom components -->
+</view>
